@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>你是GAY嗎</title>
+  <style>
+    #startBtn {
+  padding: 12px 24px;   /* 縮小按鈕大小 */
+  font-size: 20px;      /* 字體稍微小一點 */
+  border: none;
+  border-radius: 50px;  /* 圓圓的 pill 形狀 */
+  background: #ff99cc;  /* 粉色系更可愛 */
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+#startBtn:hover {
+  transform: scale(1.1);
+  background: #ff66aa;
+}
+
+    @font-face {
+      font-family: 'LXGW';
+      src: url('LXGW_WenKai_Mono_TC.ttf') format('truetype');
+    }
+    body {
+      font-family: 'LXGW', sans-serif;
+      text-align: center;
+      background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    h1 { color: #fff; text-shadow: 2px 2px 4px #000; font-size: 52px; margin-bottom: 20px; }
+    .question { margin: 30px 0; display: none; color: #fff; font-size: 30px; }
+    #result {
+      font-size: 64px;
+      font-weight: bold;
+      margin-top: 40px;
+      color: #fff;
+      opacity: 0;
+      transform: scale(0.5);
+      text-shadow: 3px 3px 6px #000;
+    }
+    #result.show {
+      opacity: 1;
+      animation: bounce 1.5s ease forwards;
+    }
+    @keyframes bounce {
+      0% { transform: scale(0.5); }
+      50% { transform: scale(2.2); }
+      70% { transform: scale(1.6); }
+      100% { transform: scale(2); }
+    }
+    button.option, #startBtn {
+      padding: 18px 36px;
+      margin: 15px;
+      font-size: 22px;
+      border: none;
+      border-radius: 30px;
+      background: pink;
+      color: #333;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button.option:hover, #startBtn:hover { transform: scale(1.1); background: #ff99cc; }
+    #progressContainer { width: 80%; margin: 20px auto; background: #ddd; border-radius: 10px; display:none; }
+    #progressBar { width: 0%; height: 20px; background: #4caf50; border-radius: 10px; }
+    #restartBtn {
+      margin-top: 40px;
+      padding: 14px 28px;
+      font-size: 22px;
+      border: none;
+      border-radius: 25px;
+      background: #ffcc00;
+      cursor: pointer;
+      display:none;
+    }
+    .heart {
+      position: absolute;
+      color: pink;
+      font-size: 28px;
+      animation: float 6s infinite;
+    }
+    .heart.big {
+      font-size: 48px;
+      animation-duration: 3s;
+    }
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      50% { transform: translateY(-200px) rotate(180deg); opacity: 0.7; }
+      100% { transform: translateY(-400px) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <h1>同性戀測試器</h1>
+
+  <!-- 開始按鈕 -->
+  <button id="startBtn" onclick="startQuiz()">開始作答</button>
+
+  <div id="progressContainer"><div id="progressBar"></div></div>
+
+  <form id="quizForm">
+    <div class="question" id="q1">1. 你是否曾經對同性產生「喜歡」的感受？<br>
+      <button type="button" class="option" onclick="nextQuestion(1)">是</button>
+      <button type="button" class="option" onclick="nextQuestion(1)">否</button>
+    </div>
+    <div class="question" id="q2">2. 如果同性向你告白，你的第一反應是什麼？<br>
+      <button type="button" class="option" onclick="nextQuestion(2)">完全不可能答應</button>
+      <button type="button" class="option" onclick="nextQuestion(2)">看情況，可以考慮</button>
+    </div>
+    <div class="question" id="q3">3. 你曾經有過同性偶像或角色讓你特別著迷嗎？<br>
+      <button type="button" class="option" onclick="nextQuestion(3)">有</button>
+      <button type="button" class="option" onclick="nextQuestion(3)">沒有</button>
+    </div>
+    <div class="question" id="q4">4. 當你看到同性情侶時，你的感覺是...？<br>
+      <button type="button" class="option" onclick="nextQuestion(4)">沒特別感覺</button>
+      <button type="button" class="option" onclick="nextQuestion(4)">有點羨慕</button>
+    </div>
+    <div class="question" id="q5">5. 你比較支持民進黨還是國民黨？<br>
+      <button type="button" class="option" onclick="showInfo()">民進黨</button>
+      <button type="button" class="option" onclick="showInfo()">國民黨</button>
+    </div>
+    <div class="question" id="info">
+      姓名：<input type="text" id="name"><br>
+      <button type="button" onclick="showResult()">查看結果</button>
+    </div>
+  </form>
+
+  <div id="result"></div>
+  <button id="restartBtn" onclick="restartQuiz()">重新開始測驗</button>
+
+  <script>
+    createHearts(false);
+
+    function startQuiz(){
+      document.getElementById('startBtn').style.display = 'none';
+      document.getElementById('q1').style.display = 'block';
+      document.getElementById('progressContainer').style.display = 'block';
+      updateProgress(1);
+    }
+
+    function nextQuestion(num) {
+      document.getElementById('q' + num).style.display = 'none';
+      document.getElementById('q' + (num + 1)).style.display = 'block';
+      updateProgress(num + 1);
+    }
+
+    function showInfo() {
+      document.getElementById('q5').style.display = 'none';
+      document.getElementById('info').style.display = 'block';
+      updateProgress(5);
+    }
+
+    function showResult() {
+      const name = document.getElementById('name').value || "測試者";
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerText = name + "，你是GAY！";
+      resultDiv.classList.add("show");
+      document.getElementById('restartBtn').style.display = 'inline-block';
+      createHearts(true);
+    }
+
+    function restartQuiz() {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerText = "";
+      resultDiv.classList.remove("show");
+      document.getElementById('restartBtn').style.display = 'none';
+      document.getElementById('quizForm').reset();
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById('q' + i).style.display = 'none';
+      }
+      document.getElementById('info').style.display = 'none';
+      document.getElementById('startBtn').style.display = 'inline-block';
+      document.getElementById('progressContainer').style.display = 'none';
+      document.querySelectorAll('.heart').forEach(h => h.remove());
+      createHearts(false);
+    }
+
+    function updateProgress(current) {
+      const total = 5;
+      const percent = (current / total) * 100;
+      document.getElementById('progressBar').style.width = percent + "%";
+    }
+
+    function createHearts(big) {
+      for (let i = 0; i < 20; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart' + (big ? ' big' : '');
+        heart.innerHTML = '❤';
+        heart.style.left = Math.random() * window.innerWidth + 'px';
+        heart.style.top = window.innerHeight + 'px';
+        heart.style.animationDuration = (Math.random() * (big ? 1.5 : 3) + (big ? 1.5 : 3)) + 's';
+        document.body.appendChild(heart);
+      }
+    }
+  </script>
+</body>
+</html>
